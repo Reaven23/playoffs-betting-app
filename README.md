@@ -1,16 +1,16 @@
 # NBA Playoffs Betting App
 
-Une application web pour parier sur les matchs des playoffs NBA. Les utilisateurs peuvent créer des comptes, parier sur les matchs et gagner des points en fonction de leurs prédictions.
+Application web permettant aux utilisateurs de parier sur les matchs des playoffs NBA. Les utilisateurs peuvent créer des comptes, parier sur les matchs et gagner des points en fonction de leurs prédictions.
 
 ## Fonctionnalités
 
-- 🏀 Création de séries et matchs (admin)
-- 💰 Système de paris avec points
-- 🏆 Tableau des scores
-- 👤 Gestion des utilisateurs et rôles
-- 📱 Interface responsive
+- Création et gestion des séries et matchs (admin)
+- Système de paris avec attribution de points
+- Tableau des scores des utilisateurs
+- Gestion des utilisateurs et des rôles
+- Interface responsive
 
-## Technologies
+## Stack technique
 
 - Frontend : React + Vite
 - Backend : Node.js + Express
@@ -48,16 +48,16 @@ npx sequelize-cli db:migrate
 npx sequelize-cli db:seed:all
 ```
 
-## Fonctionnement
+## Rôles et permissions
 
-- Les utilisateurs normaux peuvent :
-  - Voir les matchs en cours
-  - Placer des paris
-  - Consulter leurs paris
-  - Voir le classement
+Utilisateurs :
+- Consultation des matchs en cours
+- Placement de paris
+- Suivi des paris
+- Consultation du classement
 
-- Les administrateurs peuvent :
-  - Créer des séries
-  - Ajouter des matchs
-  - Définir les gagnants
-  - Gérer les utilisateurs
+Administrateurs :
+- Gestion des séries
+- Gestion des matchs
+- Définition des gagnants
+- Administration des utilisateurs
