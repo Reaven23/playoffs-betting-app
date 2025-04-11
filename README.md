@@ -1,6 +1,6 @@
 # NBA Playoffs Betting App
 
-Application web permettant aux utilisateurs de parier sur les matchs des playoffs NBA. Les utilisateurs peuvent créer des comptes, parier sur les matchs et gagner des points en fonction de leurs prédictions.
+Application web permettant aux utilisateurs de parier sur les matchs des playoffs NBA. Les utilisateurs peuvent créer des comptes, parier sur les matchs et gagner des points en fonction de leurs prédictions. En cours de création, NON FONCTIONNEL actuellement.
 
 ## Fonctionnalités
 
