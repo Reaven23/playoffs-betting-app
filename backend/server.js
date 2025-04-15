@@ -8,6 +8,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const seriesRoutes = require('./routes/series');
 const betsRoutes = require('./routes/bets');
+const leaderRoutes = require('./routes/leaderboard');
 const { auth, adminOnly } = require('./middleware/auth');
 
 const app = express();
@@ -30,6 +31,8 @@ app.use('/api/series', seriesRoutes);
 
 // Routes pour les paris
 app.use('/api/bets', betsRoutes);
+
+app.use('/api/leaderboard', leaderRoutes);
 
 // Routes publiques
 app.get('/api/health', (req, res) => {

@@ -87,7 +87,7 @@ module.exports = {
     } catch (error) {
       console.error('Erreur lors du seed:', error);
       throw error;
-    }
+    } 
   },
 
   down: async (queryInterface, Sequelize) => {
