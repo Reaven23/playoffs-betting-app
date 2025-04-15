@@ -174,10 +174,15 @@ router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
     }
 
     // Mettre à jour le match
+    console.log(req.body);
+
     const updatedGame = await game.update({
       winnerId,
       status
     });
+
+    console.log(game);
+
 
     // Si le match est terminé, mettre à jour les paris
     if (status === 'completed' && winnerId) {
@@ -186,23 +191,28 @@ router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
         where: { gameId }
       });
 
+      console.log(bets);
+
       // Mettre à jour chaque pari
       for (const bet of bets) {
         try {
-          if (!bet.teamId) {
+          if (!bet.TeamId) {
             console.error('Pari sans teamId:', bet.id);
             continue;
           }
 
           // Déterminer le nouveau statut du pari
-          const newStatus = bet.teamId === winnerId ? 'won' : 'lost';
+          const newStatus = bet.TeamId === winnerId ? 'won' : 'lost';
           const points = newStatus === 'won' ? 10 : -5;
 
           // Mettre à jour le pari
           await bet.update({
             status: newStatus,
-            points
+            points: points
           });
+          
+          console.log("bet updated");
+          console.log(bet);
 
           // Mettre à jour les points totaux de l'utilisateur
           const user = await User.findByPk(bet.userId);
