@@ -17,11 +17,15 @@ module.exports = {
       const hashedUserPassword = await bcrypt.hash('user123', 10);
 
       const users = await User.bulkCreate([
-        { username: 'admin', email: 'admin@example.com', password: hashedAdminPassword, role: 'admin', totalPoints: 0 },
-        { username: 'user1', email: 'user1@example.com', password: hashedUserPassword, role: 'user', totalPoints: 0 },
-        { username: 'user2', email: 'user2@example.com', password: hashedUserPassword, role: 'user', totalPoints: 0 }
+        { username: 'adri', email: 'adri@mail.com', password: hashedAdminPassword, role: 'admin', totalPoints: 0 },
+        { username: 'thanos', email: 'thanos@mail.com', password: hashedUserPassword, role: 'user', totalPoints: 0 },
+        { username: 'xav', email: 'xav@mail.com', password: hashedUserPassword, role: 'user', totalPoints: 0 },
+        { username: 'sim', email: 'sim@mail.com', password: hashedUserPassword, role: 'user', totalPoints: 0 },
+        { username: 'momo', email: 'momo@mail.com', password: hashedUserPassword, role: 'user', totalPoints: 0 },
+        { username: 'bobo', email: 'bobo@mail.com', password: hashedUserPassword, role: 'user', totalPoints: 0 },
+        { username: 'dids', email: 'dids@mail.com', password: hashedUserPassword, role: 'user', totalPoints: 0 }
       ]);
-      console.log('Utilisateurs créés');
+      console.log('Utilisateurs de SLAP créés');
 
       const teams = await Team.bulkCreate([
         // Conférence Est
