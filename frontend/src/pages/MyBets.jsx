@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -22,6 +23,7 @@ function MyBets() {
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalBets: 0,
     wonBets: 0,
@@ -35,11 +37,13 @@ function MyBets() {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const token = localStorage.getItem('token');
-        const response = await api.get(`/bets/users/${user.id}/bets`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+
+        if (!user || !token) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await api.get(`/bets/users/${user.id}/bets`);
         setBets(response.data);
 
         // Calculer les statistiques
@@ -54,13 +58,17 @@ function MyBets() {
         setLoading(false);
       } catch (err) {
         console.error('Erreur lors du chargement des paris:', err);
-        setError('Erreur lors du chargement des paris');
-        setLoading(false);
+        if (err.response?.status === 401) {
+          navigate('/login');
+        } else {
+          setError('Erreur lors du chargement des paris');
+          setLoading(false);
+        }
       }
     };
 
     fetchBets();
-  }, []);
+  }, [navigate]);
 
   const getStatusColor = (status) => {
     switch (status) {

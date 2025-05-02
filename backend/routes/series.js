@@ -3,7 +3,6 @@ const router = express.Router();
 const { Series, Game, Team, Bet, User } = require('../models');
 const { auth, adminOnly } = require('../middleware/auth');
 
-// Récupérer toutes les séries
 router.get('/', async (req, res) => {
   try {
     const series = await Series.findAll({
@@ -18,7 +17,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Récupérer une série par son ID
 router.get('/:id', async (req, res) => {
   try {
     const series = await Series.findByPk(req.params.id, {
@@ -43,13 +41,11 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Créer une nouvelle série (admin seulement)
 router.post('/', auth, adminOnly, async (req, res) => {
   try {
     const { Team1Id, Team2Id, round, conference } = req.body;
     console.log('Création d\'une nouvelle série:', { Team1Id, Team2Id, round, conference });
 
-    // Vérifier que les équipes existent
     const team1 = await Team.findByPk(Team1Id);
     const team2 = await Team.findByPk(Team2Id);
 
@@ -66,7 +62,6 @@ router.post('/', auth, adminOnly, async (req, res) => {
       Team2Wins: 0
     });
 
-    // Récupérer la série avec les informations des équipes
     const seriesWithTeams = await Series.findByPk(series.id, {
       include: [
         { model: Team, as: 'Team1' },
@@ -82,7 +77,6 @@ router.post('/', auth, adminOnly, async (req, res) => {
   }
 });
 
-// Récupérer les matchs d'une série
 router.get('/:id/games', async (req, res) => {
   try {
     const games = await Game.findAll({
@@ -99,7 +93,6 @@ router.get('/:id/games', async (req, res) => {
   }
 });
 
-// Créer un match pour une série (admin seulement)
 router.post('/:id/games', auth, adminOnly, async (req, res) => {
   try {
     console.log('Tentative de création d\'un match:', {
@@ -110,7 +103,6 @@ router.post('/:id/games', auth, adminOnly, async (req, res) => {
 
     const { gameNumber, date, homeTeamId, awayTeamId } = req.body;
 
-    // Vérification des champs requis
     if (!gameNumber || !date || !homeTeamId || !awayTeamId) {
       return res.status(400).json({
         message: 'Tous les champs sont requis',
@@ -123,7 +115,6 @@ router.post('/:id/games', auth, adminOnly, async (req, res) => {
       });
     }
 
-    // Vérifier que les équipes font partie de la série
     const series = await Series.findByPk(req.params.id);
     if (!series) {
       return res.status(404).json({ message: 'Série non trouvée' });
@@ -162,7 +153,6 @@ router.post('/:id/games', auth, adminOnly, async (req, res) => {
   }
 });
 
-// Mettre à jour un match (admin seulement)
 router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
   try {
     const { seriesId, gameId } = req.params;
@@ -173,7 +163,6 @@ router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
       return res.status(404).json({ message: 'Match non trouvé' });
     }
 
-    // Mettre à jour le match
     console.log(req.body);
 
     const updatedGame = await game.update({
@@ -184,16 +173,13 @@ router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
     console.log(game);
 
 
-    // Si le match est terminé, mettre à jour les paris
     if (status === 'completed' && winnerId) {
-      // Récupérer tous les paris pour ce match
       const bets = await Bet.findAll({
         where: { gameId }
       });
 
       console.log(bets);
 
-      // Mettre à jour chaque pari
       for (const bet of bets) {
         try {
           if (!bet.TeamId) {
@@ -201,20 +187,19 @@ router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
             continue;
           }
 
-          // Déterminer le nouveau statut du pari
           const newStatus = bet.TeamId === winnerId ? 'won' : 'lost';
           const points = newStatus === 'won' ? 10 : -5;
 
-          // Mettre à jour le pari
+
           await bet.update({
             status: newStatus,
             points: points
           });
-          
+
           console.log("bet updated");
           console.log(bet);
 
-          // Mettre à jour les points totaux de l'utilisateur
+
           const user = await User.findByPk(bet.userId);
           if (user) {
             const newTotalPoints = Math.max(0, user.totalPoints + points);
@@ -234,7 +219,7 @@ router.put('/:seriesId/games/:gameId', auth, adminOnly, async (req, res) => {
   }
 });
 
-// Supprimer une série
+
 router.delete('/:id', auth, async (req, res) => {
   try {
     const series = await Series.findByPk(req.params.id);
@@ -242,7 +227,7 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Série non trouvée' });
     }
 
-    // Vérifier si l'utilisateur est admin
+
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Accès non autorisé' });
     }
@@ -255,7 +240,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// Supprimer un match
+
 router.delete('/:seriesId/games/:gameId', auth, async (req, res) => {
   try {
     const game = await Game.findByPk(req.params.gameId);
@@ -263,7 +248,7 @@ router.delete('/:seriesId/games/:gameId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Match non trouvé' });
     }
 
-    // Vérifier si l'utilisateur est admin
+
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Accès non autorisé' });
     }

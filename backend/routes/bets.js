@@ -3,7 +3,7 @@ const router = express.Router();
 const { Bet, Game, Team, User } = require('../models');
 const { auth } = require('../middleware/auth');
 
-// Récupérer les paris d'un utilisateur
+
 router.get('/users/:userId/bets', auth, async (req, res) => {
   try {
     const bets = await Bet.findAll({
@@ -62,7 +62,7 @@ router.get('/users/:userId/bets', auth, async (req, res) => {
   }
 });
 
-// Placer un pari
+
 router.post('/games/:gameId/bets', auth, async (req, res) => {
   try {
     console.log('Requête de pari reçue:', {
@@ -84,18 +84,18 @@ router.post('/games/:gameId/bets', auth, async (req, res) => {
       return res.status(400).json({ message: 'teamId est requis' });
     }
 
-    // Convertir teamId en nombre si nécessaire
+
     const numericTeamId = typeof teamId === 'string' ? parseInt(teamId) : teamId;
     console.log('teamId converti:', numericTeamId);
 
-    // Vérifier si le match existe
+
     const game = await Game.findByPk(req.params.gameId);
     if (!game) {
       console.error('Match non trouvé:', req.params.gameId);
       return res.status(404).json({ message: 'Match non trouvé' });
     }
 
-    // Vérifier si l'équipe sélectionnée fait partie du match
+
     if (game.HomeTeamId !== numericTeamId && game.AwayTeamId !== numericTeamId) {
       console.error('Équipe invalide pour ce match:', {
         teamId: numericTeamId,
@@ -105,7 +105,7 @@ router.post('/games/:gameId/bets', auth, async (req, res) => {
       return res.status(400).json({ message: 'L\'équipe sélectionnée ne fait pas partie de ce match' });
     }
 
-    // Récupérer le nom de l'équipe
+
     const team = await Team.findByPk(numericTeamId);
     if (!team) {
       console.error('Équipe non trouvée:', numericTeamId);
@@ -133,15 +133,15 @@ router.post('/games/:gameId/bets', auth, async (req, res) => {
       points: 0
     });
 
-    // Vérifier que le pari a été correctement créé
+
     const createdBet = await Bet.findByPk(bet.id, {
       include: [{ model: Team }]
     });
 
-    // Vérifier que le teamId a été correctement enregistré
+
     if (!createdBet.teamId) {
       console.error('Erreur: teamId non enregistré pour le pari:', createdBet);
-      // Tenter de corriger le pari
+
       await createdBet.update({ teamId: numericTeamId });
       console.log('Pari corrigé avec le teamId:', numericTeamId);
     }
@@ -156,7 +156,7 @@ router.post('/games/:gameId/bets', auth, async (req, res) => {
       userId: createdBet.UserId
     });
 
-    // Mettre à jour le statut du pari si le match est déjà terminé
+
     if (game.status === 'completed' && game.winnerId) {
       const isWinner = createdBet.teamId === game.winnerId;
       await createdBet.update({
@@ -181,7 +181,7 @@ router.post('/games/:gameId/bets', auth, async (req, res) => {
   }
 });
 
-// Modifier un pari existant
+
 router.put('/games/:gameId/bets', auth, async (req, res) => {
   try {
     console.log('Requête de modification de pari reçue:', {
@@ -208,7 +208,7 @@ router.put('/games/:gameId/bets', auth, async (req, res) => {
       return res.status(404).json({ message: 'Pari non trouvé' });
     }
 
-    // Vérifier si le match n'a pas encore commencé
+    
     const game = await Game.findByPk(req.params.gameId);
     if (game.status !== 'pending') {
       return res.status(400).json({ message: 'Impossible de modifier le pari car le match a déjà commencé' });
